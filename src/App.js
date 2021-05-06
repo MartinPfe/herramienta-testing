@@ -68,9 +68,12 @@ const App = () => {
   useEffect(() => {
     setLineasDeCodigo(parseInt(lineasTotales - lineasDeCodigoComentadas));
 
-    let porcentajeComentadas = parseFloat(
-      (parseInt(lineasDeCodigoComentadas) / parseInt(lineasTotales)) * 100
-    ).toFixed(2);
+    let porcentajeComentadas =
+      lineasDeCodigoComentadas === 0
+        ? 0
+        : parseFloat(
+            (parseInt(lineasDeCodigoComentadas) / parseInt(lineasTotales)) * 100
+          ).toFixed(2);
 
     setPorcentajeLineasDeCodigoComentadas(porcentajeComentadas);
   }, [lineasTotales, lineasDeCodigoComentadas]);
