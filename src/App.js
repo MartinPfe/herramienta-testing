@@ -15,6 +15,11 @@ const App = () => {
   const [lineasTotales, setLineasTotales] = useState(0);
   const [lineasDeCodigo, setLineasDeCodigo] = useState(0);
   const [lineasDeCodigoComentadas, setLineasDeCodigoComentadas] = useState(0);
+  const [lineasEnBlanco, setLineasEnBlanco] = useState(0);
+
+  const [fanIn, setFanIn] = useState(0);
+  const [fanOut, setFanOut] = useState(0);
+
   const [
     porcentajeLineasDeCodigoComentadas,
     setPorcentajeLineasDeCodigoComentadas,
@@ -56,13 +61,15 @@ const App = () => {
 
     setLineasTotales(codigo.split('\n').length - 1);
 
-    setLineasDeCodigoComentadas(codigo.split('//').length - 1);
+    setLineasEnBlanco(codigo.split('\n').filter(l => l.trim() === '').length);
 
-    console.log('lineasTotales:', lineasTotales);
-    console.log('lineasDeCodigoComentadas:', lineasDeCodigoComentadas);
+    setLineasDeCodigoComentadas(codigo.split('//').length - 1);
 
     calcularComplejidadCiclomatica();
     calcularHalsteadMetodo();
+
+    setFanIn(0);
+    setFanOut(0);
   };
 
   useEffect(() => {
@@ -178,6 +185,10 @@ const App = () => {
               <Text>{lineasDeCodigoComentadas}</Text>
             </Box>
             <Box>
+              <Text>Lineas de en blanco</Text>
+              <Text>{lineasEnBlanco}</Text>
+            </Box>
+            <Box>
               <Text>Porcentaje Lineas Comentadas</Text>
               <Text>{porcentajeLineasDeCodigoComentadas} %</Text>
             </Box>
@@ -195,10 +206,18 @@ const App = () => {
               <Text>Halstead Volumen</Text>
               <Text>{halsteadVolumen}</Text>
             </Box>
+            <Box>
+              <Text>Fan In</Text>
+              <Text>{fanIn}</Text>
+            </Box>
+            <Box>
+              <Text>Fan Out</Text>
+              <Text>{fanOut}</Text>
+            </Box>
           </HStack>
 
           <HStack justifyContent="center">
-            <Box maxW="200">
+            <Box minW="300" maxW="300">
               <Text>Operadores Halstead</Text>
               <Textarea
                 value={operadoresHalsted}
