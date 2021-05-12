@@ -89,8 +89,10 @@ const App = () => {
     var c = 0;
     c += codigo.split('if').length - 1;
     console.log('if:', c);
-    c += codigo.split('else').length - 1;
-    console.log('else:', c);
+    // Entiendo que el else no se deberia contar xq no generan un nodo predicado, solo el que deriva dos condiciones, 
+    // es decir con un IF tengo implicitamente el verdadero y el falso.., y los else if se cuentan implicitamente al contar el if.
+    // c += codigo.split('else').length - 1;
+    // console.log('else:', c);
     c += codigo.split('for').length - 1;
     console.log('for:', c);
     c += codigo.split('while').length - 1;
@@ -163,7 +165,11 @@ const App = () => {
         <Grid minH="100vh" p={3}>
           <ColorModeSwitcher justifySelf="flex-end" />
           <Text>Ingrese el código</Text>
-          <Textarea value={codigo} onChange={handleChange} />
+          <Textarea 
+            value={codigo}
+            onChange={handleChange} 
+            size="sm"
+            resize={'vertical'}/>
 
           <Box>
             <Button colorScheme="blue" width="50" onClick={calcular}>
