@@ -248,21 +248,18 @@ const App = () => {
           <HStack spacing={8} justifyContent="center">
             <Box>
               <Text style={{fontWeight:'bolder'}}>Fan In </Text>
-              
-              {metodoFanIn?
+              <Text >0</Text> 
+              {/* {metodoFanIn?
               <>
                 <Text style={{fontSize:10, backgroundColor:'black',color:'white', fontWeight:'bolder', borderRadius:5, padding:5}}>Método: {metodoFanIn}</Text>
                 <Text style={{fontWeight:'bolder'}}>{fanIn}</Text> 
               </> :
               <Select placeholder="Metodo a medir" onChange={e => {handleSetMethod(e)}}>
-                {/* <option value="option1">Option 1</option>
-                <option value="option2">Option 2</option>
-                <option value="option3">Option 3</option> */}
                 {metodosEnCodigo.map(method=>
                 <> <option value={method}>{method}</option> </>)
                 }
               </Select>
-              }
+              } */}
               
             </Box>
             <Box>
