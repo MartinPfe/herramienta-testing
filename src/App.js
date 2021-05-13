@@ -79,7 +79,7 @@ const App = () => {
     let array = ['metodo1','metodo2','metodo3'];
 
     // La idea es que metodos tenga todos los nombres de los metodos que hay en el codigo obtenidos mediante regex pero no lo logre todavia.
-    const metodos = codigo.split(/(public|protected|private|static|\s) +[\w\<\>\[\]]+\s+(\w+) *\([^\)]*\)/gm);
+    // const metodos = codigo.split(/(public|protected|private|static|\s) +[\w\<\>\[\]]+\s+(\w+) *\([^\)]*\)/gm);
     // Y mandarlos en setMetodosEnCodigo.
     //   let i=0;
     //   console.log('aca'+metodos)
