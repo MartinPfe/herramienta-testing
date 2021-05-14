@@ -7,8 +7,6 @@ import {
   Text,
   Textarea,
   theme,
-  // eslint-disable-next-line
-  Select,
 } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import { ColorModeSwitcher } from './ColorModeSwitcher';
@@ -18,8 +16,8 @@ const App = () => {
   const [lineasDeCodigo, setLineasDeCodigo] = useState(0);
   const [lineasDeCodigoComentadas, setLineasDeCodigoComentadas] = useState(0);
   const [lineasEnBlanco, setLineasEnBlanco] = useState(0);
-  const [recomendacionModular,setRecomendacionModular] = useState('');
-// eslint-disable-next-line
+  const [recomendacionModular, setRecomendacionModular] = useState('');
+  // eslint-disable-next-line
   const [fanIn, setFanIn] = useState(0);
   const [fanOut, setFanOut] = useState(0);
   // eslint-disable-next-line
@@ -45,8 +43,8 @@ const App = () => {
   // const [operadoresHalsted, setOperadoresHalsted] = useState(
   //   '+,-,/,*,:,&&,||,<=,>=,<,>,=,==,!=,{},system.out.println,public,static,void,int,double,float,string,if,else,elseif'
   // );
-// eslint-disable-next-line
-  const handleSetMethod = event =>  {
+  // eslint-disable-next-line
+  const handleSetMethod = event => {
     setMetodoFanIn(event.target.value);
   };
 
@@ -73,13 +71,33 @@ const App = () => {
       return;
     }
 
-    setLineasTotales(codigo.split('\n').length - 1);
+    setLineasTotales(codigo.split('\n').length);
 
     setLineasEnBlanco(codigo.split('\n').filter(l => l.trim() === '').length);
 
-    setLineasDeCodigoComentadas(codigo.split('//').length - 1);
-    setFanOut(codigo.split(/.*\(.*\);/gm).length-1);
-    let array = ['metodo1','metodo2','metodo3'];
+    var cantComentarios = 0;
+    var enComentario = false;
+
+    if (codigo.length > 0) {
+      codigo.split('\n').forEach(linea => {
+        console.log('linea:', linea);
+        if (linea.includes('//')) cantComentarios++;
+        else if (linea.includes('/*')) {
+          cantComentarios++;
+          enComentario = true;
+        } else if (enComentario) {
+          if (linea.includes('*/')) {
+            enComentario = false;
+          }
+          cantComentarios++;
+        }
+      });
+    }
+
+    setLineasDeCodigoComentadas(cantComentarios);
+
+    setFanOut(codigo.split(/.*\(.*\);/gm).length - 1);
+    let array = ['metodo1', 'metodo2', 'metodo3'];
 
     // La idea es que metodos tenga todos los nombres de los metodos que hay en el codigo obtenidos mediante regex pero no lo logre todavia.
     // const metodos = codigo.split(/(public|protected|private|static|\s) +[\w\<\>\[\]]+\s+(\w+) *\([^\)]*\)/gm);
@@ -99,7 +117,9 @@ const App = () => {
   useEffect(() => {
     // Aca me parece que a las lineas de codigo comentadas habria que sumarle las en blanco ya que no serian parte de las lineas de codigo, sino de las totales.
     /// setLineasDeCodigo(parseInt(lineasTotales - lineasDeCodigoComentadas);
-    setLineasDeCodigo(parseInt(lineasTotales - (lineasDeCodigoComentadas+lineasEnBlanco)));
+    setLineasDeCodigo(
+      parseInt(lineasTotales - (lineasDeCodigoComentadas + lineasEnBlanco))
+    );
     let porcentajeComentadas =
       lineasDeCodigoComentadas === 0
         ? 0
@@ -115,7 +135,7 @@ const App = () => {
     c += codigo.split('if').length - 1;
     //console.log('Tiene en cuenta if:', c);
 
-    // Entiendo que el else no se deberia contar xq no generan un nodo predicado, solo el que deriva dos condiciones, 
+    // Entiendo que el else no se deberia contar xq no generan un nodo predicado, solo el que deriva dos condiciones,
     // es decir con un IF tengo implicitamente el verdadero y el falso.., y los else if se cuentan implicitamente al contar el if.
     // c += codigo.split('else').length - 1;
 
@@ -128,10 +148,14 @@ const App = () => {
     //console.log('Tiene en cuenta ||:', c);
     c += codigo.split('&&').length - 1;
     //console.log("Tiene en cuenta '&&':", c);
-    console.log('Nodos predicados:'+ c);
+    console.log('Nodos predicados:' + c);
     c++;
     setComplejidadCiclomatica(c);
-    setRecomendacionModular(c>11?'Se recomienda modularizar el código':'No es necesario modularizar el código');
+    setRecomendacionModular(
+      c > 11
+        ? 'Se recomienda modularizar el código'
+        : 'No es necesario modularizar el código'
+    );
   };
 
   const calcularHalsteadMetodo = () => {
@@ -162,7 +186,6 @@ const App = () => {
     var aAnalizar = textosSinComentarios.split(' ');
     var hasta = textosSinComentarios.split(' ').length;
     for (let j = 0; j < hasta; j++) {
-
       // Tecnicamente si no es un operador, es un operando.
       //Si no es un operador y todavia no esta en el array de operandos unicos.
       if (
@@ -189,22 +212,30 @@ const App = () => {
     setHalsteadVolumen(volumenHalstead);
     return [longitudHalstead, volumenHalstead];
   };
-// (?:(?:public)|(?:private)|(?:static)|(?:protected)\s+)*
+  // (?:(?:public)|(?:private)|(?:static)|(?:protected)\s+)*
   return (
     <ChakraProvider theme={theme}>
       <Box textAlign="center" fontSize="xl">
         <Grid minH="100vh" p={2}>
           <ColorModeSwitcher justifySelf="flex-end" />
-          <Text style={{textAlign:'left'}}>Ingrese el código</Text>
-          <Textarea 
+          <Text style={{ textAlign: 'left' }}>Ingrese el código</Text>
+          <Textarea
             value={codigo}
-            onChange={handleChange} 
+            onChange={handleChange}
             size="md"
             resize={'vertical'}
-            style={{height: 250}}
-            />
+            style={{ height: 250 }}
+          />
           <Box>
-          <Text style={{marginTop:10,marginBottom:10, color:complejidadCiclomatica>11?'red':'green'}}>{recomendacionModular}</Text>
+            <Text
+              style={{
+                marginTop: 10,
+                marginBottom: 10,
+                color: complejidadCiclomatica > 11 ? 'red' : 'green',
+              }}
+            >
+              {recomendacionModular}
+            </Text>
           </Box>
           <Box>
             <Button colorScheme="blue" width="50" onClick={calcular}>
@@ -214,44 +245,50 @@ const App = () => {
 
           <HStack spacing={8} justifyContent="center">
             <Box>
-              <Text style={{fontWeight:'bolder'}}>Lineas totales</Text>
+              <Text style={{ fontWeight: 'bolder' }}>Lineas totales</Text>
               <Text>{lineasTotales}</Text>
             </Box>
             <Box>
-              <Text style={{fontWeight:'bolder'}}>Lineas de solo código</Text>
+              <Text style={{ fontWeight: 'bolder' }}>
+                Lineas de solo código
+              </Text>
               <Text>{lineasDeCodigo}</Text>
             </Box>
             <Box>
-              <Text style={{fontWeight:'bolder'}}>Lineas Comentadas</Text>
+              <Text style={{ fontWeight: 'bolder' }}>Lineas Comentadas</Text>
               <Text>{lineasDeCodigoComentadas}</Text>
             </Box>
             <Box>
-              <Text style={{fontWeight:'bolder'}}>Lineas en blanco</Text>
+              <Text style={{ fontWeight: 'bolder' }}>Lineas en blanco</Text>
               <Text>{lineasEnBlanco}</Text>
             </Box>
             <Box>
-              <Text style={{fontWeight:'bolder'}}>Porcentaje de comentarios</Text>
+              <Text style={{ fontWeight: 'bolder' }}>
+                Porcentaje de comentarios
+              </Text>
               <Text>{porcentajeLineasDeCodigoComentadas} %</Text>
             </Box>
           </HStack>
           <HStack spacing={8} justifyContent="center">
             <Box>
-              <Text style={{fontWeight:'bolder'}}>Complejidad Ciclomatica</Text>
+              <Text style={{ fontWeight: 'bolder' }}>
+                Complejidad Ciclomatica
+              </Text>
               <Text>{complejidadCiclomatica}</Text>
             </Box>
             <Box>
-              <Text style={{fontWeight:'bolder'}}>Halstead Longitud </Text>
+              <Text style={{ fontWeight: 'bolder' }}>Halstead Longitud </Text>
               <Text>{halsteadLongitud}</Text>
             </Box>
             <Box>
-              <Text style={{fontWeight:'bolder'}}>Halstead Volumen</Text>
+              <Text style={{ fontWeight: 'bolder' }}>Halstead Volumen</Text>
               <Text>{halsteadVolumen}</Text>
             </Box>
-            </HStack>
+          </HStack>
           <HStack spacing={8} justifyContent="center">
             <Box>
-              <Text style={{fontWeight:'bolder'}}>Fan In </Text>
-              <Text >0</Text> 
+              <Text style={{ fontWeight: 'bolder' }}>Fan In </Text>
+              <Text>0</Text>
               {/* {metodoFanIn?
               <>
                 <Text style={{fontSize:10, backgroundColor:'black',color:'white', fontWeight:'bolder', borderRadius:5, padding:5}}>Método: {metodoFanIn}</Text>
@@ -263,15 +300,14 @@ const App = () => {
                 }
               </Select>
               } */}
-              
             </Box>
             <Box>
-              <Text style={{fontWeight:'bolder'}}>Fan Out</Text>
+              <Text style={{ fontWeight: 'bolder' }}>Fan Out</Text>
               <Text>{fanOut}</Text>
             </Box>
 
             <Box minW="300" maxW="300">
-              <Text style={{fontWeight:'bolder'}}>Operadores Halstead</Text>
+              <Text style={{ fontWeight: 'bolder' }}>Operadores Halstead</Text>
               <Textarea
                 value={operadoresHalsted}
                 onChange={handleChangeOperadores}
