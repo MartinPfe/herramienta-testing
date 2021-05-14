@@ -4,6 +4,7 @@ import {
   ChakraProvider,
   Grid,
   HStack,
+  Select,
   Text,
   Textarea,
   theme,
@@ -77,10 +78,16 @@ const App = () => {
 
     var cantComentarios = 0;
     var enComentario = false;
+    var regexFunciones = new RegExp(
+      '((public|private|protected|static|final|native|synchronized|abstract|transient)+\\s)+[\\$_\\w\\<\\>\\[\\]]*\\s+[\\$_\\w]+\\([^\\)]*\\)?\\s*\\{?[^\\}]*\\}?'
+    );
+
+    setMetodosEnCodigo([]);
+
+    var regexNombre = new RegExp(/([a-zA-Z_{1}][a-zA-Z0-9_]+)(?=\()/g);
 
     if (codigo.length > 0) {
       codigo.split('\n').forEach(linea => {
-        console.log('linea:', linea);
         if (linea.includes('//')) cantComentarios++;
         else if (linea.includes('/*')) {
           cantComentarios++;
@@ -91,27 +98,23 @@ const App = () => {
           }
           cantComentarios++;
         }
+
+        if (regexFunciones.test(linea)) {
+          setMetodosEnCodigo(metodosEnCodigo => [
+            ...metodosEnCodigo,
+            linea.match(regexNombre)[0],
+          ]);
+        }
       });
     }
 
     setLineasDeCodigoComentadas(cantComentarios);
 
-    setFanOut(codigo.split(/.*\(.*\);/gm).length - 1);
-    let array = ['metodo1', 'metodo2', 'metodo3'];
-
-    // La idea es que metodos tenga todos los nombres de los metodos que hay en el codigo obtenidos mediante regex pero no lo logre todavia.
-    // const metodos = codigo.split(/(public|protected|private|static|\s) +[\w\<\>\[\]]+\s+(\w+) *\([^\)]*\)/gm);
-    // Y mandarlos en setMetodosEnCodigo.
-    //   let i=0;
-    //   console.log('aca'+metodos)
-    // for(i=0;i<metodos.length;i++){
-    //   console.log('Elemento '+metodos[i]);
-    // }
-
-    setMetodosEnCodigo(array);
     calcularComplejidadCiclomatica();
     calcularHalsteadMetodo();
     setFanIn(0);
+    setFanOut(0);
+    //setFanOut(codigo.split(/.*\(.*\);/gm).length - 1);
   };
 
   useEffect(() => {
@@ -148,7 +151,7 @@ const App = () => {
     //console.log('Tiene en cuenta ||:', c);
     c += codigo.split('&&').length - 1;
     //console.log("Tiene en cuenta '&&':", c);
-    console.log('Nodos predicados:' + c);
+    //console.log('Nodos predicados:' + c);
     c++;
     setComplejidadCiclomatica(c);
     setRecomendacionModular(
@@ -287,19 +290,31 @@ const App = () => {
           </HStack>
           <HStack spacing={8} justifyContent="center">
             <Box>
-              <Text style={{ fontWeight: 'bolder' }}>Fan In </Text>
-              <Text>0</Text>
-              {/* {metodoFanIn?
-              <>
-                <Text style={{fontSize:10, backgroundColor:'black',color:'white', fontWeight:'bolder', borderRadius:5, padding:5}}>Método: {metodoFanIn}</Text>
-                <Text style={{fontWeight:'bolder'}}>{fanIn}</Text> 
-              </> :
-              <Select placeholder="Metodo a medir" onChange={e => {handleSetMethod(e)}}>
-                {metodosEnCodigo.map(method=>
-                <> <option value={method}>{method}</option> </>)
-                }
+              <Select
+                placeholder="Metodo a medir"
+                onChange={e => {
+                  handleSetMethod(e);
+                }}
+              >
+                {metodosEnCodigo.length > 0 ? (
+                  metodosEnCodigo.map(method => (
+                    <>
+                      {' '}
+                      <option key={method} value={method}>
+                        {method}
+                      </option>{' '}
+                    </>
+                  ))
+                ) : (
+                  <option key="" value="">
+                    No hay metodos
+                  </option>
+                )}
               </Select>
-              } */}
+            </Box>
+            <Box>
+              <Text style={{ fontWeight: 'bolder' }}>Fan In </Text>
+              <Text>{fanIn}</Text>
             </Box>
             <Box>
               <Text style={{ fontWeight: 'bolder' }}>Fan Out</Text>
