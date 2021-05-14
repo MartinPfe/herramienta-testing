@@ -7,6 +7,7 @@ import {
   Text,
   Textarea,
   theme,
+  // eslint-disable-next-line
   Select,
 } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
@@ -18,10 +19,12 @@ const App = () => {
   const [lineasDeCodigoComentadas, setLineasDeCodigoComentadas] = useState(0);
   const [lineasEnBlanco, setLineasEnBlanco] = useState(0);
   const [recomendacionModular,setRecomendacionModular] = useState('');
-
+// eslint-disable-next-line
   const [fanIn, setFanIn] = useState(0);
   const [fanOut, setFanOut] = useState(0);
+  // eslint-disable-next-line
   const [metodoFanIn, setMetodoFanIn] = useState(null);
+  // eslint-disable-next-line
   const [metodosEnCodigo, setMetodosEnCodigo] = useState([]);
 
   const [
@@ -42,7 +45,7 @@ const App = () => {
   // const [operadoresHalsted, setOperadoresHalsted] = useState(
   //   '+,-,/,*,:,&&,||,<=,>=,<,>,=,==,!=,{},system.out.println,public,static,void,int,double,float,string,if,else,elseif'
   // );
-
+// eslint-disable-next-line
   const handleSetMethod = event =>  {
     setMetodoFanIn(event.target.value);
   };
