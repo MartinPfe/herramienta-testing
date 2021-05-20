@@ -25,6 +25,7 @@ const App = () => {
   const [metodoFanIn, setMetodoFanIn] = useState(null);
   // eslint-disable-next-line
   const [metodosEnCodigo, setMetodosEnCodigo] = useState([]);
+  const [objetoFunciones, setObjetoFunciones] = useState([]);
 
   const [
     porcentajeLineasDeCodigoComentadas,
@@ -67,12 +68,35 @@ const App = () => {
   };
 
   useEffect(() => {
+    setFanIn(0);
+    setFanOut(0);
+
     if ((metodoFanIn || '').length > 0) {
       setFanOut(codigo.split(metodoFanIn).length - 2);
-    } else {
-      setFanOut(0);
+
+      var funcionObjetoAAnalizar = objetoFunciones.find(
+        r => r.nombre === metodoFanIn
+      );
+
+      var codigoSplitted = codigo.split('\n');
+
+      for (
+        let i = funcionObjetoAAnalizar.inicio;
+        i <= funcionObjetoAAnalizar.fin;
+        i++
+      ) {
+        let linea = codigoSplitted[i];
+
+        metodosEnCodigo
+          .filter(m => m !== metodoFanIn)
+          .forEach(nombreMethod => {
+            if (linea.includes(nombreMethod)) {
+              setFanIn(fanIn + 1);
+            }
+          });
+      }
     }
-  }, [metodoFanIn, codigo]);
+  }, [metodoFanIn, codigo, objetoFunciones, metodosEnCodigo]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const calcular = () => {
     if (operadoresHalsted.length === 0) {
@@ -96,8 +120,12 @@ const App = () => {
     );
 
     setMetodosEnCodigo([]);
-
+    setObjetoFunciones([]);
     var regexNombre = new RegExp(/([a-zA-Z_{1}][a-zA-Z0-9_]+)(?=\()/g);
+
+    var inicioFuncion = 0;
+    var funcionAnalizando = '';
+    var posicion = 0;
 
     if (codigo.length > 0) {
       codigo.split('\n').forEach(linea => {
@@ -113,12 +141,42 @@ const App = () => {
         }
 
         if (regexFunciones.test(linea)) {
+          if (funcionAnalizando !== '') {
+            var funcionEncontrada = {
+              nombre: funcionAnalizando,
+              inicio: inicioFuncion,
+              fin: posicion - 1,
+            };
+
+            setObjetoFunciones(objetoFunciones => [
+              ...objetoFunciones,
+              funcionEncontrada,
+            ]);
+          }
+          funcionAnalizando = linea.match(regexNombre)[0];
+          inicioFuncion = posicion;
+
           setMetodosEnCodigo(metodosEnCodigo => [
             ...metodosEnCodigo,
             linea.match(regexNombre)[0],
           ]);
         }
+
+        posicion++;
       });
+    }
+
+    if (funcionAnalizando !== '') {
+      var funcionEncontrada = {
+        nombre: funcionAnalizando,
+        inicio: inicioFuncion,
+        fin: posicion - 1,
+      };
+
+      setObjetoFunciones(objetoFunciones => [
+        ...objetoFunciones,
+        funcionEncontrada,
+      ]);
     }
 
     setLineasDeCodigoComentadas(cantComentarios);
