@@ -66,6 +66,15 @@ const App = () => {
     alert(mensaje);
   };
 
+  useEffect(() => {
+    console.log('Analizandooo');
+    if ((metodoFanIn || '').length > 0) {
+      setFanOut(codigo.split(metodoFanIn).length - 2);
+    } else {
+      setFanOut(0);
+    }
+  }, [metodoFanIn, codigo]);
+
   const calcular = () => {
     if (operadoresHalsted.length === 0) {
       mostrarError('Debe ingresar operadores halstead');
@@ -174,7 +183,6 @@ const App = () => {
       ''
     );
 
-    console.log(textosSinComentarios);
     var cantidadOperadoresTotales = 0;
     var cantidadOperandosTotales = 0;
     var cantidadOperadoresUnicos = 0;
@@ -223,7 +231,6 @@ const App = () => {
 
     setHalsteadLongitud(longitudHalstead);
     setHalsteadVolumen(volumenHalstead);
-    return [longitudHalstead, volumenHalstead];
   };
   // (?:(?:public)|(?:private)|(?:static)|(?:protected)\s+)*
   return (
