@@ -67,7 +67,6 @@ const App = () => {
   };
 
   useEffect(() => {
-    console.log('Analizandooo');
     if ((metodoFanIn || '').length > 0) {
       setFanOut(codigo.split(metodoFanIn).length - 2);
     } else {
