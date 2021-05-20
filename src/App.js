@@ -41,6 +41,11 @@ const App = () => {
   const [operadoresHalsted, setOperadoresHalsted] = useState(
     '+, -, /, *, int, double, float, ;, :, public, static, void, &&, ||, <=, >=, <, >'
   );
+
+  // const [operadoresHalsted, setOperadoresHalsted] = useState(
+  //   'if, for, while, else, {, }, new, switch,(,),do,class,extends,return, finally, throw, throws, =, ==, +=, -=, *=, /=, >, <, >>, <<, >>>, >=, <=, +, /, *, -, ++, --, int, double, float, &&, ||'
+  // );
+
   // const [operadoresHalsted, setOperadoresHalsted] = useState(
   //   '+,-,/,*,:,&&,||,<=,>=,<,>,=,==,!=,{},system.out.println,public,static,void,int,double,float,string,if,else,elseif'
   // );
@@ -168,11 +173,13 @@ const App = () => {
       /(\/\*([\s\S]*?)\*\/)|(\/\/(.*)$)/gm,
       ''
     );
+
+    console.log(textosSinComentarios);
     var cantidadOperadoresTotales = 0;
     var cantidadOperandosTotales = 0;
     var cantidadOperadoresUnicos = 0;
     var cantidadOperandosUnicos = 0;
-    var operadores = operadoresHalsted;
+    var operadores = operadoresHalsted.split(',');
     var operandosUnicos = [];
     var i;
     //OPERADORES UNICOS Y TOTALES.
@@ -188,6 +195,7 @@ const App = () => {
     //OPERANDOS UNICOS Y TOTALES.
     var aAnalizar = textosSinComentarios.split(' ');
     var hasta = textosSinComentarios.split(' ').length;
+
     for (let j = 0; j < hasta; j++) {
       // Tecnicamente si no es un operador, es un operando.
       //Si no es un operador y todavia no esta en el array de operandos unicos.
@@ -200,7 +208,9 @@ const App = () => {
       }
 
       //Si no es un operador.
-      if (operadores.indexOf(aAnalizar[j]) === -1) cantidadOperandosTotales++;
+      if (!operadores.includes(aAnalizar[j])) {
+        cantidadOperandosTotales++;
+      }
     }
     var longitudHalstead = parseInt(
       cantidadOperadoresUnicos * Math.log2(cantidadOperadoresUnicos) +
